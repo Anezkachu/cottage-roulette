@@ -1,0 +1,768 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Bubbles&family=VT323&display=swap');
+
+/* General reset and cozy vibe */
+body {
+  margin: 0;
+  font-family: 'VT323', monospace;
+  background: #1a0f0a;
+  color: #fffaf0;
+  image-rendering: pixelated;
+  /* Ensure scalability looks sharp */
+}
+
+/* Container and panels */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card.panel {
+  background: #fffaf0;
+  border: 2px solid #d4c9b9;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid layout for bet controls */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Buttons */
+.btn {
+  background: #8b5e3c;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #a06f4a;
+}
+
+.btn-xl {
+  font-size: 1.25rem;
+  padding: 12px 32px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background: #2e7d32;
+  /* Casino Green */
+  box-shadow: 0 4px 0 #1b5e20;
+}
+
+.btn-xl:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1b5e20;
+}
+
+/* Status messages */
+.status {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Roulette wheel */
+.roulette-container {
+  text-align: center;
+  margin: 20px;
+  perspective: 1000px;
+}
+
+.casino-wheel-outer {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  margin: 0 auto;
+  background: #3e2723;
+  /* Dark Wood */
+  box-shadow:
+    0 0 0 8px #5d4037,
+    /* Lighter Wood */
+    0 0 0 14px #ffd700,
+    /* Gold Rim */
+    0 15px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Inner gold rim/track */
+.casino-wheel-outer::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wheel-spinner {
+  position: relative;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  /* Clips the wedges */
+  border: 4px solid #c0c0c0;
+  /* Silver rim around numbers */
+}
+
+.wheel-slot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 40px;
+  /* Optimized for 440px diam circle */
+  height: 220px;
+  /* Radius */
+  margin-left: -20px;
+  /* Center */
+  transform-origin: 50% 100%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+}
+
+.wheel-number {
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  text-shadow: 1px 1px 0 #000;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 10;
+}
+
+.wheel-slot.red {
+  background: #d32f2f;
+}
+
+.wheel-slot.black {
+  background: #212121;
+}
+
+.wheel-slot.green {
+  background: #2e7d32;
+}
+
+.wheel-number {
+  color: #fff;
+  font-family: 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 11px;
+  transform: rotate(0deg);
+  /* Can adjust if we want text rotation to face center or upright */
+}
+
+/* Center Knob (Turret) */
+.wheel-center-knob {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle at 30% 30%, #e6be8a, #8b5e3c);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  z-index: 20;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  /* Turret handles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-center-knob::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: inset 0 0 2px #333;
+}
+
+/* Ball Logic */
+.ball-container {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.casino-ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #dcdcdc 50%, #a9a9a9);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Pointer */
+.wheel-pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 24px solid #ffd700;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+  z-index: 50;
+}
+
+/* Cosmetics shop */
+.shop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shop-item {
+  flex: 1 1 200px;
+  background: #fdfcf7;
+  border: 1px solid #d4c9b9;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.shop-item h4 {
+  margin: 0 0 4px;
+}
+
+.price {
+  font-weight: bold;
+  color: #555;
+}
+
+.moving-bg {
+  background: url('/src/assets/forest_casino_bg.jpg') repeat;
+  background-size: 640px;
+  /* Adjust based on image size */
+  animation: bgScroll 60s linear infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: pixelated;
+}
+
+@keyframes bgScroll {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 512px 512px;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Menu Styles */
+.menu-container {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 250, 240, 0.8);
+  border: 4px solid #8b5e3c;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pixel-bubble-title {
+  font-family: 'VT323', monospace;
+  font-size: 6rem;
+  color: #ffd700;
+  text-shadow: 4px 4px 0px #3e2723;
+  margin: 0 0 20px;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+.roulette-text {
+  font-size: 3rem;
+  color: #2e7d32;
+  text-shadow: 3px 3px 0px #1b5e20;
+}
+
+.menu-buttons-diamond {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Pixel Play Button */
+.btn-pixel-play {
+  font-family: 'VT323', monospace;
+  font-size: 2.5rem;
+  color: white;
+  background: #ff5722;
+  border: none;
+  padding: 10px 40px;
+  cursor: pointer;
+
+  /* Pixelated Border using Box Shadows */
+  box-shadow:
+    inset 4px 4px 0px rgba(255, 255, 255, 0.4),
+    inset -4px -4px 0px rgba(0, 0, 0, 0.2),
+    4px 0 0 #3e2723,
+    -4px 0 0 #3e2723,
+    0 -4px 0 #3e2723,
+    0 4px 0 #3e2723,
+    0 0 0 4px #3e2723;
+  /* Outer dark line */
+
+  margin: 10px;
+  transition: transform 0.1s;
+}
+
+.btn-pixel-play:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 4px 4px 0px rgba(0, 0, 0, 0.2),
+    4px 0 0 #3e2723,
+    -4px 0 0 #3e2723,
+    0 -4px 0 #3e2723,
+    0 4px 0 #3e2723,
+    0 0 0 4px #3e2723;
+}
+
+.btn-pixel-secondary {
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  background: #8d6e63;
+  color: white;
+  border: 4px solid #5d4037;
+  padding: 8px 24px;
+  cursor: pointer;
+}
+
+.menu-decor {
+  font-size: 2rem;
+  color: #5d4037;
+  margin-top: 10px;
+}
+
+/* Betting Board - Landscape */
+.betting-board-container {
+  overflow-x: auto;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.betting-board {
+  display: inline-grid;
+  grid-template-columns: 50px auto;
+  gap: 4px;
+  background: #1b5e20;
+  padding: 12px;
+  border: 4px solid #ffd700;
+  border-radius: 0;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+}
+
+.board-cell.zero {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  /* Spans height of number grid */
+  height: auto;
+  clip-path: polygon(0 50%, 20% 0, 100% 0, 100% 100%, 20% 100%);
+  /* Bullet shape pointing left */
+  /* Actually standard is 0 spans 3 rows */
+  margin: 0;
+  writing-mode: vertical-rl;
+  /* Text vertical */
+  transform: rotate(180deg);
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 45px);
+  /* 12 Cols */
+  grid-template-rows: repeat(3, 45px);
+  /* 3 Rows */
+  grid-auto-flow: column;
+  /* Fills Column by Column (1,2,3 down) */
+  /* Wait: Standard is:
+     Row 3: 3, 6, 9...
+     Row 2: 2, 5, 8...
+     Row 1: 1, 4, 7...
+     User wants correct order. 
+     If we use grid-auto-flow: column, default is 1,2,3 in col 1.
+     But visual order usually puts 3 at top?
+     We can handle this by reversing row order or just rendering.
+     We will check BettingBoard.jsx mapping.
+  */
+  gap: 4px;
+}
+
+/* Color Buttons need to be wide below? */
+.side-bets-row {
+  grid-column: 1 / span 2;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 8px;
+}
+
+.bet-red,
+.bet-black {
+  flex: 1;
+  margin: 0 4px;
+  border-radius: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.board-cell {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-family: 'Times New Roman', serif;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.board-cell:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.board-cell.selected {
+  background: #ffd700;
+  color: #333;
+  box-shadow: 0 0 10px #ffd700;
+  border-color: #fff;
+}
+
+.number-cell.red {
+  background-color: #d32f2f;
+}
+
+.number-cell.black {
+  background: #212121;
+}
+
+/* Card System */
+.fate-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  min-height: 200px;
+}
+
+.fate-card-wrapper {
+  position: relative;
+  width: 140px;
+  height: 200px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.fate-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.fate-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.fate-card.faded {
+  opacity: 0.3;
+  filter: grayscale(100%);
+  transition: opacity 0.5s, filter 0.5s;
+}
+
+.fate-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 4px solid #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.fate-card-back {
+  background: #3e2723;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffd700;
+  font-size: 2rem;
+  border: 4px solid #ffd700;
+  image-rendering: pixelated;
+}
+
+.fate-card-front {
+  background: #fffaf0;
+  /* Parchment */
+  transform: rotateY(180deg);
+  text-align: center;
+  padding: 8px;
+  color: #3e2723;
+}
+
+/* Rarities */
+.rarity-common .fate-card-front {
+  border-color: #8d6e63;
+}
+
+.rarity-uncommon .fate-card-front {
+  border-color: #2e7d32;
+}
+
+.rarity-rare .fate-card-front {
+  border-color: #1565c0;
+}
+
+.rarity-event .fate-card-front {
+  border-color: #ff6f00;
+  box-shadow: 0 0 15px #ffd700;
+}
+
+/* Card Content Layout */
+.card-header {
+  font-family: 'VT323', monospace;
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-top: 8px;
+  line-height: 1.1;
+  color: #3e2723;
+  /* Dark brown on parchment */
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.card-body {
+  font-size: 0.85rem;
+  font-family: 'Segoe UI', sans-serif;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.card-footer {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #777;
+}
+
+/* Explanation Panel */
+.card-explanation {
+  margin-top: 16px;
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: fadeIn 0.5s;
+  border: 2px solid #8b5e3c;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Overlay for Draw */
+.fate-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Control Panel Premium Styles */
+.control-panel {
+  background: #2e7d32;
+  /* Casino Green Felt */
+  border: 4px solid #3e2723;
+  /* Dark Wood */
+  border-radius: 0;
+  /* Pixelated usually means sharp corners */
+  box-shadow:
+    inset 0 0 0 4px #5d4037,
+    /* Inner Bevel */
+    inset 0 0 40px rgba(0, 0, 0, 0.5),
+    8px 8px 0 rgba(0, 0, 0, 0.5);
+  /* Hard shadow */
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  color: #fff;
+  font-family: 'VT323', monospace;
+  position: relative;
+  image-rendering: pixelated;
+}
+
+/* Gold Screws/Accents in corners */
+.control-panel::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px dashed rgba(255, 215, 0, 0.3);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 150px;
+}
+
+.control-label {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  color: #ffd700;
+  /* Gold */
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.control-value-box {
+  background: #000;
+  border: 2px solid #555;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: 'VT323', monospace;
+  font-size: 2rem;
+  color: #0f0;
+  /* Retro terminal green */
+  min-width: 120px;
+  text-align: center;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.control-input {
+  background: #fff;
+  border: 2px solid #8d6e63;
+  padding: 8px;
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  color: #333;
+  border-radius: 4px;
+  width: 100px;
+  text-align: center;
+}
+
+.control-select {
+  background: #fffaf0;
+  border: 2px solid #8d6e63;
+  padding: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.bet-summary {
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 5px;
+  min-width: 120px;
+  text-align: center;
+}
