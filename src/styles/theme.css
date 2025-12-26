@@ -5,8 +5,8 @@ body {
   margin: 0;
   font-family: 'VT323', monospace;
   background: #1a0f0a;
-  color: #fffaf0;
   image-rendering: pixelated;
+  height: 100%;
   /* Ensure scalability looks sharp */
 }
 
@@ -87,7 +87,7 @@ body {
 /* Roulette wheel */
 .roulette-container {
   text-align: center;
-  margin: 20px;
+  margin: 30px 20px;
   perspective: 1000px;
 }
 
@@ -146,18 +146,20 @@ body {
   /* Center */
   transform-origin: 50% 100%;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  display: flex;
-  justify-content: center;
-  padding-top: 5px;
 }
 
 .wheel-number {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   color: #fff;
   font-weight: 900;
-  font-size: 16px;
-  text-shadow: 1px 1px 0 #000;
-  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.5);
+  font-family: 'Arial', sans-serif;
   z-index: 10;
+  line-height: 1;
 }
 
 .wheel-slot.red {
@@ -170,15 +172,6 @@ body {
 
 .wheel-slot.green {
   background: #2e7d32;
-}
-
-.wheel-number {
-  color: #fff;
-  font-family: 'Times New Roman', serif;
-  font-weight: bold;
-  font-size: 11px;
-  transform: rotate(0deg);
-  /* Can adjust if we want text rotation to face center or upright */
 }
 
 /* Center Knob (Turret) */
