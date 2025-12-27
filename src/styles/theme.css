@@ -122,8 +122,9 @@ body {
 /* Status messages */
 .status {
   margin-top: 12px;
-  font-size: 14px;
-  color: #444;
+  font-size: 20px;
+  color: rgb(255, 215, 0);
+  text-shadow: rgb(0, 0, 0) 2px 2px 0px;
 }
 
 /* Roulette wheel */
@@ -490,11 +491,15 @@ body {
 .bet-red {
   background: #d32f2f !important;
   color: white;
+  width: 150px;
+  padding: 10px 20px;
 }
 
 .bet-black {
   background: #212121 !important;
   color: white;
+  width: 150px;
+  padding: 10px 20px;
 }
 
 .bet-red:hover {

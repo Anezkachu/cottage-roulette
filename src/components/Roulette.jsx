@@ -148,7 +148,7 @@ const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
 
       <div className="controls" style={{ margin: '24px 0', display: 'flex', justifyContent: 'center' }}>
         <button className="btn-img" onClick={spinWheel} disabled={spinning} style={{ opacity: spinning ? 0.6 : 1, filter: spinning ? 'grayscale(0.5)' : 'none' }}>
-          <img src={spinBtnImg} alt={spinning ? 'SPINNING...' : 'SPIN'} style={{ width: '250px' }} />
+          <img src={spinBtnImg} alt={spinning ? 'SPINNING...' : 'SPIN'} style={{ width: '300px', marginBottom: '30px' }} />
         </button>
       </div>
     </div>

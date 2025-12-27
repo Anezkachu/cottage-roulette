@@ -420,13 +420,13 @@ export default function App() {
 
         {/* 3. Helper / Status */}
         <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-          <div className="status" style={{ minHeight: '24px', marginBottom: '16px' }}>{message}</div>
+          <div className="status" style={{ minHeight: '24px' }}>{message}</div>
 
           {/* Card Action Buttons */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
             {!card && !choosingCard && (
               <button className="btn-img" onClick={startCardDraw}>
-                <img src={drawFateBtn} alt="DRAW FATE" style={{ width: '300px' }} />
+                <img src={drawFateBtn} alt="DRAW FATE" style={{ width: '400px' }} />
               </button>
             )}
 
