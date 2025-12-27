@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import spinBtnImg from '../assets/Spinbtn.png';
 
 // European Roulette Order
 const wheelOrder = [
@@ -16,7 +17,7 @@ const getRealColor = (n) => {
 
 const CELL_SIZE = 360 / 37;
 
-export default function Roulette({ playerCard, onCard, onResult, theme }) {
+const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [ballRotation, setBallRotation] = useState(0);
@@ -81,6 +82,15 @@ export default function Roulette({ playerCard, onCard, onResult, theme }) {
     }, 5000); // 5s total
   };
 
+  // Expose triggerSpin method to parent via ref
+  useImperativeHandle(ref, () => ({
+    triggerSpin: () => {
+      if (!spinning) {
+        spinWheel();
+      }
+    }
+  }));
+
   return (
     <div className="roulette-container">
       <div className="casino-wheel-outer">
@@ -136,11 +146,13 @@ export default function Roulette({ playerCard, onCard, onResult, theme }) {
 
       </div>
 
-      <div className="controls" style={{ margin: '24px 0' }}>
-        <button className="btn btn-xl" onClick={spinWheel} disabled={spinning} style={{ fontSize: '1.5rem', fontFamily: '"VT323", monospace', padding: '12px 32px' }}>
-          {spinning ? 'NO MORE BETS...' : 'SPIN'}
+      <div className="controls" style={{ margin: '24px 0', display: 'flex', justifyContent: 'center' }}>
+        <button className="btn-img" onClick={spinWheel} disabled={spinning} style={{ opacity: spinning ? 0.6 : 1, filter: spinning ? 'grayscale(0.5)' : 'none' }}>
+          <img src={spinBtnImg} alt={spinning ? 'SPINNING...' : 'SPIN'} style={{ width: '250px' }} />
         </button>
       </div>
     </div>
   );
-}
+});
+
+export default Roulette;
