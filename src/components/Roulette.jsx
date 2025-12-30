@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import spinBtnImg from '../assets/Spinbtn.png';
+import { playRouletteSpinSound } from '../utils/audio';
 
 // European Roulette Order
 const wheelOrder = [
@@ -26,6 +27,8 @@ const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
 
   const spinWheel = () => {
     if (spinning) return;
+    // Start the sound earlier (at 4.17s) so it has enough duration to reach the wheel stop
+    playRouletteSpinSound(4.17);
     setSpinning(true);
 
     // 1. Determine Result
@@ -48,32 +51,32 @@ const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
     setBallRadius(220); // Reset to rim
 
     // Drop phase with Physics Bounce
-    // Timing: The ball spins for 4s total.
-    // Drop starts around 2s.
+    // Timing: The ball spins for 5s total.
+    // Drop starts around 2.5s.
 
     setTimeout(() => {
       setBallRadius(160); // Drop to slot ring
-    }, 2000);
+    }, 2500);
 
     // Bounce 1
     setTimeout(() => {
       setBallRadius(180);
-    }, 2400);
+    }, 3000);
 
     // Land 1
     setTimeout(() => {
       setBallRadius(160);
-    }, 2700);
+    }, 3300);
 
     // Bounce 2 (Small)
     setTimeout(() => {
-      setBallRadius(170);
-    }, 3000);
+      setBallRadius(175);
+    }, 3700);
 
     // Final Land
     setTimeout(() => {
       setBallRadius(160);
-    }, 3200);
+    }, 4000);
 
     // Finish
     setTimeout(() => {
@@ -102,7 +105,7 @@ const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
           className="wheel-spinner"
           style={{
             transform: `rotate(${rotation}deg)`,
-            transition: spinning ? 'transform 4s cubic-bezier(0.1, 0, 0.1, 1)' : 'none'
+            transition: spinning ? 'transform 5s cubic-bezier(0.1, 0, 0.1, 1)' : 'none'
           }}
         >
           {wheelOrder.map((num, i) => (
@@ -129,14 +132,15 @@ const Roulette = forwardRef(({ playerCard, onCard, onResult, theme }, ref) => {
           className="ball-container"
           style={{
             transform: `rotate(${ballRotation}deg)`,
-            transition: spinning ? 'transform 4s cubic-bezier(0.1, 0.2, 0.1, 1)' : 'none'
+            transition: spinning ? 'transform 5s cubic-bezier(0.1, 0.2, 0.1, 1)' : 'none'
           }}
         >
           <div
             className="casino-ball"
             style={{
               transform: `translateY(-${ballRadius}px)`,
-              transition: spinning ? 'transform 1.5s ease-out 2s' : 'none'
+              // Removed 1.5s transition to allow JS bounce timeouts to work correctly
+              transition: spinning ? 'transform 0.1s linear' : 'none'
             }}
           ></div>
         </div>

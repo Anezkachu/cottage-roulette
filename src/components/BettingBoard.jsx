@@ -1,4 +1,5 @@
 import React from 'react';
+import { playBoardButtonSound } from '../utils/audio';
 
 const COLORS = {
     0: 'green',
@@ -34,10 +35,12 @@ export default function BettingBoard({ onBet, betType, betNumber, betColor }) {
     }
 
     const handleNumberClick = (n) => {
+        playBoardButtonSound();
         onBet({ type: 'straight', value: n });
     };
 
     const handleColorClick = (c) => {
+        playBoardButtonSound();
         onBet({ type: 'color', value: c });
     };
 
